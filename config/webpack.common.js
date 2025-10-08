@@ -1,24 +1,15 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  entry: "./src/index.js",
-  output:{
-    publicPath:'http://localhost:2000/'
-  },
-  devServer: {
-    port: 2000,
-    historyApiFallback: true
-  },
     module:{
         rules:[
             {
-                test: /\.(js|jsx)$/,
+                test: /\.(js|jsx|ts|tsx)$/,
                 exclude:/node_modules/,
                 use:{
                     loader:'babel-loader',
                     options:{
-                        presets:['@babel/preset-react', '@babel/preset-env'],
+                        presets:['@babel/preset-react', '@babel/preset-env', '@babel/preset-typescript'],
                         plugins:['@babel/plugin-transform-runtime']
                     }
                 }
@@ -31,10 +22,14 @@ module.exports = {
                 "postcss-loader"
                 ],
             },
+            {
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                type: "asset/resource", // emits separate files
+            },
         ]
     },
     resolve: {
-        extensions: [".js", ".jsx"],
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
     plugins : [
         new HtmlWebpackPlugin({
