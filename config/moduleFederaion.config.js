@@ -6,6 +6,9 @@ const moduleFederationConfig = {
     exposes:{
         './ProductsApp':'./src/bootstrap.tsx'
     },
+    remotes:{
+        container:'container@http://localhost:2000/remoteEntry.js'
+    },
     shared:packageJsonCommon.dependencies
 }
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCartIcon, HeartIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
-// import { addToCart } from '../store/slices/cartSlice';
+import { AppDispatch, RootState } from '../store';
+import { addToCart } from '../store/slices/cartSlice';
 import { setBuyProduct, getProductById } from '../store/slices/productSlice';
 // import { AddToWishList } from '../store/slices/wishlistSlice';
 import ProductImage from '../components/productImage';
 import { useNavigate, useParams } from 'react-router-dom';
+import {eventBus } from 'container/eventBus';
 
 interface Product {
     _id: string;
@@ -14,6 +15,8 @@ interface Product {
     price: string;
     brand: string;
     stock: number;
+    description: string;
+    images?: string[];
 }
 interface ProductListProps {
     products: Product[];
@@ -24,16 +27,18 @@ const ProductDescription = () => {
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState<Product | null>(null);
+    const cart = useSelector((state: RootState) => state.cart.cartItems);
     const {slug} = useParams();
 
     const handleAddToCart = async () => {
         console.log("Add to cart clicked");
-        // try {
-        //     await dispatch(addToCart(product._id)).unwrap();
+        try {
+            await dispatch(addToCart(product._id)).unwrap();
+            eventBus.emit('cart:updated', { quantity : cart.length});
             
-        // } catch (error) {
-        //     console.error("Error adding to cart:", error);
-        // }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+        }
     };
     const handleGetProduct = async () => {
         try {
