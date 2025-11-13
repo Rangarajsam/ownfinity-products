@@ -31,6 +31,7 @@ const ProductDescription = () => {
     const {slug} = useParams();
 
     const handleAddToCart = async () => {
+        // Emit event for adding to cart
         console.log("Add to cart clicked");
         try {
             await dispatch(addToCart(product._id)).unwrap();
