@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import { setSelectedProduct } from '../store/slices/productSlice';
+import { eventBus } from 'container/eventBus';
 interface Product {
     _id: string;
     name: string;
@@ -23,6 +24,7 @@ const ProductList = ({ products }: ProductListProps) => {
     const goToDescription = (product: Product) => {
         dispatch(setSelectedProduct(product));
         navigate(`/product/${product._id}`);
+        eventBus.emit("remote:navigate", `/product/${product._id}`);
     };
 
 

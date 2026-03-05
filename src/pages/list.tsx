@@ -136,7 +136,7 @@ export default function List() {
                             Products
                         </h2>
 
-                        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
+                        <div className="grid gap-x-8 gap-y-10 lg:grid-cols-4">
                             <SideFilter filters={filters} setFilters={setFilters}/>
                             {Array.isArray(products) &&<ProductList products={products}/>}
                         </div>

@@ -43,7 +43,7 @@ const SideFilter = ({ filters, setFilters }: SideFilterProps) => {
     
     return (
 
-        <form className="hidden lg:block">
+        <form className="hidden lg:block lg:col-span-1">
 
             {Array.isArray(filters) && filters.map((section) => (
                 <Disclosure key={section.id} as="div" defaultOpen={true} className="border-b border-gray-200 py-6">

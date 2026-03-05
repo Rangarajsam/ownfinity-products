@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { addToCart } from '../store/slices/cartSlice';
 import { setBuyProduct, getProductById } from '../store/slices/productSlice';
-// import { AddToWishList } from '../store/slices/wishlistSlice';
+import { AddToWishList, removeFromWishlist } from '../store/slices/wishlistSlice';
 import ProductImage from '../components/productImage';
 import { useNavigate, useParams } from 'react-router-dom';
 import {eventBus } from 'container/eventBus';
@@ -17,6 +17,7 @@ interface Product {
     stock: number;
     description: string;
     images?: string[];
+    isAddedToCart?: boolean;
 }
 interface ProductListProps {
     products: Product[];
@@ -34,8 +35,8 @@ const ProductDescription = () => {
         // Emit event for adding to cart
         console.log("Add to cart clicked");
         try {
-            await dispatch(addToCart(product._id)).unwrap();
-            eventBus.emit('cart:updated', { quantity : cart.length});
+            const result = await dispatch(addToCart(product._id)).unwrap();
+            eventBus.emit('cart:updated', { count : result.items.length});
             
         } catch (error) {
             console.error("Error adding to cart:", error);
@@ -50,6 +51,10 @@ const ProductDescription = () => {
         }
     }
 
+    const goToCart = () => {
+        eventBus.emit("remote:navigate", "/cart");
+    }
+
     const handleBuyNow = (product:Product) => {
         const productToBuy = {
             productDetails: {
@@ -61,18 +66,26 @@ const ProductDescription = () => {
             quantity: quantity
         };
         dispatch(setBuyProduct([productToBuy]));
-        navigate(`/cart`);
+        goToCart();
     };
 
     const handleAddToWishlist = async() => {
-        console.log("Add to wishlist clicked");
-        // try{
-        //     await dispatch(AddToWishList(product._id)).unwrap();
-        // }
-        // catch(error) {
-        //     console.error("Error adding to wishlist:", error);
-        // }
+        try{
+            await dispatch(AddToWishList(product._id)).unwrap();
+        }
+        catch(error) {
+            console.error("Error adding to wishlist:", error);
+        }
     };
+
+    const handleRemoveFromWishlist = async() => {
+        try{
+            await dispatch(removeFromWishlist(product._id)).unwrap();
+        }
+        catch(error) {
+            console.error("Error removing from wishlist:", error);
+        }
+    }
 
     useEffect(() => {
         handleGetProduct();
@@ -88,18 +101,18 @@ const ProductDescription = () => {
                 </div>
                 <div className="mx-auto w-full mt-4 flex-col flex gap-4">
                     <button
-                        onClick={handleAddToWishlist}
+                        onClick={product?.isAddedToWishlist ? handleRemoveFromWishlist : handleAddToWishlist}
                         className="mt-6 mx-auto flex w-[400px] items-center justify-center bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300"
                     >
                         <HeartIcon className="w-5 h-5 mr-2" />
-                        Add to Wishlist
+                        {product?.isAddedToWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
                     </button>
                     <button
-                        onClick={handleAddToCart}
+                        onClick={product?.isAddedToCart ? goToCart : handleAddToCart}
                         className="flex mx-auto w-[400px] items-center justify-center bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700"
                     >
                         <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                        Add to Cart
+                        {product?.isAddedToCart ? 'Go to Cart' : 'Add to Cart'}
                     </button>
                 </div>
             </div>
